@@ -1,18 +1,26 @@
 ---
 - name: Gather device information
-  hosts: all
-  gather_facts: false
-  ansible_connection: network_cli
-  ansible_network_os: ios
-  ansible_user: cisco #MODIFY USERNAME HERE#
-  tasks:
+  hosts: all                        # Run playbook on all hosts in inventory file
+  gather_facts: false               # Do not gather device information. Saves execution time
+  ansible_connection: network_cli   # Connection type
+  ansible_network_os: ios           # OS for all devices in inventory
+  ansible_user: cisco               # MODIFY USERNAME HERE
+  tasks:                            # List of tasks
    - name: Get output
      ios_command:
+     # Call ios_command module in Ansible
        commands:
+       # Run these commands
         - show run | i permit icmp any host 10.100.238.25(3|4)
      register: acl
+     # Save output in variable 'acl'
    - name: Copy hostname if output is empty
      lineinfile:
+     # Call module to add text lines to file. Appends new text at end of file
        path: devices/missing_acl_config.txt
+       # File path
        line: '{{ inventory_hostname }}'
+       # Line to add. This adds the inventory hostname magic variable to end of file
      when: 'acl["stdout"][0]|length == 0'
+     # This module is executed only when output variable 'abc' is empty.
+     # Use |length filter to get length of string. Empty string will return 0
