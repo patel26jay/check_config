@@ -1,0 +1,3 @@
+[routers]
+router1 host = 1.1.1.1
+router2 host = 2.2.2.2

@@ -1,0 +1,18 @@
+---
+- name: Gather device information
+  hosts: all
+  gather_facts: false
+  ansible_connection: network_cli
+  ansible_network_os: ios
+  ansible_user: cisco #MODIFY USERNAME HERE#
+  tasks:
+   - name: Get output
+     ios_command:
+       commands:
+        - show run | i permit icmp any host 10.100.238.25(3|4)
+     register: acl
+   - name: Copy hostname if output is empty
+     lineinfile:
+       path: devices/missing_acl_config.txt
+       line: '{{ inventory_hostname }}'
+     when: 'acl["stdout"][0]|length == 0'
